@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1023695737195",
+    "project_id": "arfitness-1e168",
+    "storage_bucket": "arfitness-1e168.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1023695737195:android:590e6450a8839d3cc3bc2e",
+        "android_client_info": {
+          "package_name": "com.ACRELIS.ARFitness"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPwhxy_YSBxn85n2_JFGmV3XQm6FcwZeQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

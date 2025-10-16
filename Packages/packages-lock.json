@@ -22,6 +22,14 @@
         "com.google.external-dependency-manager": "1.2.186"
       }
     },
+    "com.google.firebase.auth": {
+      "version": "file:Firebase/com.google.firebase.auth-12.10.1.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.google.firebase.app": "12.10.1"
+      }
+    },
     "com.google.firebase.firestore": {
       "version": "file:Firebase/com.google.firebase.firestore-12.10.1.tgz",
       "depth": 0,

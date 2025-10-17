@@ -8,6 +8,14 @@ public class ActivityData
     public string Name;
     public string Description;
     public string Date;
+    public bool Active;
+    public TypeOfActivity TypeOfActivity;
+}
+
+public enum TypeOfActivity
+{
+    Chalange = 0,
+    Activity = 1
 }
 
 public class Activities : MonoBehaviour

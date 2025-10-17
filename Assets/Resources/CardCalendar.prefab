@@ -208,6 +208,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6414885968633225374}
+  - component: {fileID: 3191363615244392895}
   m_Layer: 0
   m_Name: CardCalendar
   m_TagString: Untagged
@@ -236,6 +237,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 125.615906, y: 125.6159}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3191363615244392895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7071419433839665358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60e9211ba2f553d4a8cc00bab7d4915f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _name: {fileID: 630678961327750213}
+  _description: {fileID: 4449613705179710576}
+  _date: {fileID: 8218244783443919070}
 --- !u!1 &8187041141013405380
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,15 +12,6 @@ public class ActivityData
 
 public class Activities : MonoBehaviour
 {
-    [SerializeField] private List<ActivityData> activities;
-
-    public void Add(ActivityData activityData)
-    {
-        if (activities == null) return;
-        activities.Add(activityData);
-    }
-    public void Remove(ActivityData activityData) 
-    { 
-        activities.Remove(activityData); 
-    }
+    [SerializeField] private List<ActivityData> _data;
+    public List<ActivityData> Data {  get { return _data; } set { _data = value; } }
 }

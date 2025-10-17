@@ -319,8 +319,10 @@ GameObject:
   - component: {fileID: 1157477724}
   - component: {fileID: 1157477726}
   - component: {fileID: 1157477725}
+  - component: {fileID: 1157477728}
+  - component: {fileID: 1157477727}
   m_Layer: 0
-  m_Name: TrainScreen
+  m_Name: TrainingScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -384,6 +386,34 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1157477723}
   m_CullTransparentMesh: 1
+--- !u!114 &1157477727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157477723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b2dbbdd1486ef24489e0ae0c265694e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spawnCard: {fileID: 972948016}
+  _cardPrefab: {fileID: 0}
+  activities: {fileID: 0}
+--- !u!114 &1157477728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157477723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a26d50db16b80049b270494e695080a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _data: []
 --- !u!1 &1224348950
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,8 +14,8 @@ public class ActivitiesManager : MonoBehaviour
         {
             var card = Instantiate(_cardPrefab, _spawnCard);
             card.transform.SetParent(_spawnCard);
-            CardActiviti cardActiviti = card.GetComponent<CardActiviti>();
-            cardActiviti.Initilize(activiti); 
+            CardActivity cardActiviti = card.GetComponent<CardActivity>();
+            cardActiviti.Initialize(activiti); 
         }
     }
     private void Start()

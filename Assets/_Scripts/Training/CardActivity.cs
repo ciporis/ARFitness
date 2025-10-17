@@ -30,16 +30,16 @@ public class CardActivity : MonoBehaviour, IDataCard<ActivityData>
             Debug.LogError("Activity data is null");
             return;
         }
-        _name.text = _activityData.Name;
-        _description.text = _activityData.Description;
-        _date.text = _activityData.Date.ToString();
-        _type.text = _activityData.TypeOfActivity.ToString();
+        _name.text = _activityData.name;
+        _description.text = _activityData.description;
+        _date.text = _activityData.date.ToString();
+        _type.text = _activityData.type.ToString();
     }
 
     private void OnActionButtonClick()
     {
         var request = new ModalRequest(
-            $"Вы хотите зарегистрироваться на активность \"{_activityData.Name}\"?",
+            $"Вы хотите зарегистрироваться на активность \"{_activityData.name}\"?",
             onApprove: OnRegistrationApproved,
             onCancel: OnRegistrationCancelled
         )
@@ -53,7 +53,7 @@ public class CardActivity : MonoBehaviour, IDataCard<ActivityData>
 
     private void OnRegistrationApproved()
     {
-        Debug.Log($"Регистрация на {_activityData.Name} подтверждена!");
+        Debug.Log($"Регистрация на {_activityData.name} подтверждена!");
 
         ModalManager.Instance.ShowAlertModal(
             "Регистрация прошла успешно!",

@@ -13,8 +13,8 @@ public struct User
     [FirestoreProperty]
     public string AvatarUrl { get; set; }
 
-    [FirestoreProperty]
-    public UserProfile Profile { get; set; }
+/*    [FirestoreProperty]
+    public UserProfile Profile { get; set; }*/
 
     [FirestoreProperty]
     public UserStats Stats { get; set; }
@@ -35,7 +35,7 @@ public struct User
     public string Role { get; set; }
 }
 
-[FirestoreData]
+/*[FirestoreData]
 public struct UserProfile
 {
     [FirestoreProperty]
@@ -55,7 +55,7 @@ public struct UserProfile
 
     [FirestoreProperty]
     public string ParentEmail { get; set; }
-}
+}*/
 
 [FirestoreData]
 public struct UserStats

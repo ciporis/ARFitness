@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using System;
-using Data;
 
 public class DayDetailsPanel : MonoBehaviour
 {
@@ -46,25 +45,21 @@ public class DayDetailsPanel : MonoBehaviour
         _panel.SetActive(true);
         _dateText.text = date.ToString("dd MMMM yyyy");
 
-        // Очищаем контент
         ClearContent(_activitiesContent);
         ClearContent(_challengesContent);
 
-        // Загружаем активности
         var activities = CalendarManager.Instance.GetActivitiesForDate(date);
         foreach (var activity in activities)
         {
             CreateActivityItem(activity);
         }
 
-        // Загружаем челленджи
         var challenges = CalendarManager.Instance.GetChallengesForDate(date);
         foreach (var challenge in challenges)
         {
             CreateChallengeItem(challenge);
         }
 
-        // Настраиваем видимость кнопок
         bool hasCompletedActivities = activities.Any(a => a.isCompleted);
         _repeatButton.gameObject.SetActive(hasCompletedActivities);
         _planButton.gameObject.SetActive(date >= DateTime.Today);

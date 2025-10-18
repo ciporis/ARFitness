@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Data;
 
 public class ActivityListItem : MonoBehaviour, IInitializable<ActivityData>
 {
@@ -20,10 +19,8 @@ public class ActivityListItem : MonoBehaviour, IInitializable<ActivityData>
         _nameText.text = data.name;
         _detailsText.text = $"{data.type} • {data.duration:hh\\:mm} • {data.distance:F1} км";
 
-        // Настройка иконки типа активности
         _typeIcon.color = GetActivityColor(data.type);
 
-        // Настройка кнопки действия
         _actionButton.onClick.RemoveAllListeners();
         if (data.isCompleted)
         {
@@ -44,7 +41,6 @@ public class ActivityListItem : MonoBehaviour, IInitializable<ActivityData>
 
     private void OnStartClicked()
     {
-        // Логика начала тренировки
         Debug.Log($"Начинаем тренировку: {_activityData.name}");
     }
 

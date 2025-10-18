@@ -1,4 +1,3 @@
-using Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,36 +19,12 @@ public class ActivityDataManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            GenerateTestData();
         }
         else
         {
             Destroy(gameObject);
         }
     }
-
-    [ContextMenu("Generate Test Data")]
-    private void GenerateTestData()
-    {
-        GenerateTestChallenges();
-    }
-
-    private void GenerateTestChallenges()
-    {
-        _challenges = new List<ChallengeData>
-        {
-            new ChallengeData
-            {
-                id = "challenge_1",
-                name = "Осенний марафон",
-                description = "Пробеги 50км за неделю",
-                startDate = DateTime.Today.AddDays(7),
-                endDate = DateTime.Today.AddDays(14),
-                isRegistered = false
-            }
-        };
-    }
-
     public void JoinChallenge(string challengeId)
     {
         var challenge = _challenges.FirstOrDefault(c => c.id == challengeId);

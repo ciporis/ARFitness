@@ -1,13 +1,10 @@
-﻿using Data;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ChallengeListItem : MonoBehaviour, IInitializable<ChallengeData>
 {
     [SerializeField] private TMP_Text _nameText;
-    [SerializeField] private TMP_Text _dateText;
-    [SerializeField] private TMP_Text _typeText;
     [SerializeField] private Button _registerButton;
     [SerializeField] private GameObject _registeredBadge;
 
@@ -18,9 +15,6 @@ public class ChallengeListItem : MonoBehaviour, IInitializable<ChallengeData>
         _challengeData = data;
 
         _nameText.text = data.name;
-        _dateText.text = $"{data.startDate:dd.MM} - {data.endDate:dd.MM}";
-        _typeText.text = "Челлендж";
-
         SetupRegistrationButton();
     }
 

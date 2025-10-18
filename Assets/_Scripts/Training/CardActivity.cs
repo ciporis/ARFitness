@@ -2,9 +2,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
-using Data;
 
-public class CardActivity : MonoBehaviour, IDataCard<ActivityData>
+public class CardActivity : MonoBehaviour, IDataCard<ActivityData>, IInitializable<ChallengeData>
 {
     private ActivityData _activityData;
     private ChallengeData _challengeData;
@@ -13,50 +12,95 @@ public class CardActivity : MonoBehaviour, IDataCard<ActivityData>
     [SerializeField] private TMP_Text _distance;
     [SerializeField] private TMP_Text _duration;
     [SerializeField] private TMP_Text _type;
+    [SerializeField] private TMP_Text _date; 
     [SerializeField] private Button _actionButton;
+
+    private bool _isChallenge = false;
 
     private void Awake()
     {
-        _actionButton.onClick.AddListener(OnActionButtonClick);
+        if (_actionButton != null)
+        {
+            _actionButton.onClick.AddListener(OnActionButtonClick);
+        }
     }
-
     public void Initialize(ActivityData activityData)
     {
         _activityData = activityData;
+        _challengeData = null;
+        _isChallenge = false;
+        SetData();
+    }
 
-        if (!string.IsNullOrEmpty(activityData.challengeId))
-        {
-            _challengeData = ActivityDataManager.Instance.GetChallengeById(activityData.challengeId);
-        }
-
+    public void Initialize(ChallengeData challengeData)
+    {
+        _challengeData = challengeData;
+        _activityData = null;
+        _isChallenge = true;
         SetData();
     }
 
     public void SetData()
     {
-        if (_activityData == null) return;
-
-        _name.text = _activityData.name;
-        _description.text = _activityData.description;
-        _distance.text = $"{_activityData.distance:F1} км";
-        _duration.text = _activityData.duration.ToString(@"hh\:mm");
-        _type.text = GetActivityTypeText(_activityData.type);
+        if (_isChallenge)
+        {
+            SetChallengeData();
+        }
+        else
+        {
+            SetActivityData();
+        }
 
         UpdateActionButton();
     }
 
+    private void SetActivityData()
+    {
+        if (_activityData == null)
+        {
+            Debug.LogError("Activity data is null");
+            return;
+        }
+
+        if (_name != null) _name.text = _activityData.name;
+        if (_description != null) _description.text = _activityData.description;
+        if (_distance != null) _distance.text = $"{_activityData.distance:F1} км";
+        if (_duration != null) _duration.text = _activityData.duration.ToString(@"hh\:mm");
+        if (_duration != null) _date.text = _activityData.date.ToString();
+        if (_type != null) _type.text = GetActivityTypeText(_activityData.type);
+    }
+
+    private void SetChallengeData()
+    {
+        if (_challengeData == null)
+        {
+            Debug.LogError("Challenge data is null");
+            return;
+        }
+
+        if (_name != null) _name.text = _challengeData.name;
+        if (_description != null) _description.text = _challengeData.description;
+        if (_distance != null) _distance.text = "Челлендж";
+        if (_duration != null) _duration.text = _challengeData.duration.ToString();
+        if (_duration != null) _date.text = "";
+        if (_type != null) _type.text = GetActivityTypeText(_challengeData.type);
+    }
+
     private void UpdateActionButton()
     {
-        var buttonText = _actionButton.GetComponentInChildren<TMP_Text>();
-        if (buttonText != null)
+        if (_actionButton != null)
         {
-            buttonText.text = IsChallenge() ? "Участвовать" : "Записаться";
+            var buttonText = _actionButton.GetComponentInChildren<TMP_Text>();
+            if (buttonText != null)
+            {
+                buttonText.text = _isChallenge ? "Участвовать" : "Записаться";
+            }
         }
     }
 
     private void OnActionButtonClick()
     {
-        if (IsChallenge())
+        if (_isChallenge)
         {
             RegisterForChallenge();
         }
@@ -66,17 +110,18 @@ public class CardActivity : MonoBehaviour, IDataCard<ActivityData>
         }
     }
 
-    private bool IsChallenge()
-    {
-        return _challengeData != null || !string.IsNullOrEmpty(_activityData.challengeId);
-    }
-
     private void RegisterForChallenge()
     {
+        if (ModalManager.Instance == null)
+        {
+            Debug.LogError("ModalManager is not available");
+            return;
+        }
+
         var request = new ModalRequest
         {
             title = "Участие в челлендже",
-            message = $"Хотите участвовать в челлендже \"{_activityData.name}\"?",
+            message = $"Хотите участвовать в челлендже \"{_challengeData.name}\"?",
             approveText = "Участвовать",
             cancelText = "Отмена",
             onApprove = CompleteChallengeRegistration,
@@ -88,6 +133,12 @@ public class CardActivity : MonoBehaviour, IDataCard<ActivityData>
 
     private void RegisterForRegularActivity()
     {
+        if (ModalManager.Instance == null)
+        {
+            Debug.LogError("ModalManager is not available");
+            return;
+        }
+
         var request = new ModalRequest
         {
             title = "Запись на тренировку",
@@ -107,7 +158,7 @@ public class CardActivity : MonoBehaviour, IDataCard<ActivityData>
     {
         if (selectedDate < DateTime.Today)
         {
-            ModalManager.Instance.ShowAlertModal("Нельзя записаться на прошедшую дату!");
+            ModalManager.Instance?.ShowAlertModal("Нельзя записаться на прошедшую дату!");
             return;
         }
 
@@ -118,35 +169,20 @@ public class CardActivity : MonoBehaviour, IDataCard<ActivityData>
     {
         try
         {
-            if (_challengeData != null)
+            if (ActivityDataManager.Instance != null && _challengeData != null)
             {
                 ActivityDataManager.Instance.JoinChallenge(_challengeData.id);
             }
 
-            var challengeActivity = new ActivityData
-            {
-                id = Guid.NewGuid().ToString(),
-                name = _activityData.name,
-                description = _activityData.description,
-                date = DateTime.Today,
-                type = _activityData.type,
-                challengeId = _activityData.challengeId,
-                distance = _activityData.distance,
-                duration = _activityData.duration,
-                isCompleted = false
-            };
-
-            CalendarManager.Instance.AddActivity(challengeActivity);
-
-            ModalManager.Instance.ShowAlertModal(
-                $"🎉 Вы участвуете в челлендже!\n\"{_activityData.name}\"",
+            ModalManager.Instance?.ShowAlertModal(
+                $"🎉 Вы участвуете в челлендже!\n\"{_challengeData.name}\"",
                 closeText: "Отлично!"
             );
         }
         catch (System.Exception e)
         {
             Debug.LogError($"Ошибка: {e.Message}");
-            ModalManager.Instance.ShowAlertModal("Ошибка при записи на челлендж");
+            ModalManager.Instance?.ShowAlertModal("Ошибка при записи на челлендж");
         }
     }
 
@@ -166,9 +202,12 @@ public class CardActivity : MonoBehaviour, IDataCard<ActivityData>
                 isCompleted = false
             };
 
-            CalendarManager.Instance.AddActivity(newActivity);
+            if (CalendarManager.Instance != null)
+            {
+                CalendarManager.Instance.AddActivity(newActivity);
+            }
 
-            ModalManager.Instance.ShowAlertModal(
+            ModalManager.Instance?.ShowAlertModal(
                 $"✅ \"{_activityData.name}\" записана на {selectedDate:dd.MM.yyyy}",
                 closeText: "Отлично!"
             );
@@ -176,7 +215,7 @@ public class CardActivity : MonoBehaviour, IDataCard<ActivityData>
         catch (System.Exception e)
         {
             Debug.LogError($"Ошибка: {e.Message}");
-            ModalManager.Instance.ShowAlertModal("Ошибка при записи");
+            ModalManager.Instance?.ShowAlertModal("Ошибка при записи");
         }
     }
 

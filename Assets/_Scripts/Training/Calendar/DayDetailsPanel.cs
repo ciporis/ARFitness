@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using System;
+using Data;
 
 public class DayDetailsPanel : MonoBehaviour
 {
@@ -106,15 +107,13 @@ public class DayDetailsPanel : MonoBehaviour
 
         if (activities.Count > 0)
         {
-            // ѕредлагаем выбрать активность дл€ повторени€
-            var activity = activities[0]; // Ѕерем первую завершенную
+            var activity = activities[0];
             CalendarManager.Instance.RepeatActivity(activity.id);
         }
     }
 
     private void OnPlanClicked()
     {
-        // ќткрываем окно планировани€ тренировки
         FindObjectOfType<PlanningPanel>()?.ShowForDate(_currentDate);
     }
 

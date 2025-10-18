@@ -12,6 +12,11 @@ public class ModalRequest
     public Action onCancel;
     public Action onClose;
 
+    public bool showDatePicker = false;
+    public DateTime initialDate = DateTime.Today;
+    public Action<DateTime> onDateSelected;
+    public string dateFormat = "dd.MM.yyyy";
+
     public ModalRequest() { }
 
     public ModalRequest(string message, Action onApprove = null, Action onCancel = null)
@@ -27,5 +32,13 @@ public class ModalRequest
         this.message = message;
         this.approveText = approveText;
         this.cancelText = cancelText;
+    }
+
+    public ModalRequest(string message, Action onApprove = null, Action onCancel = null, bool showDatePicker = false)
+    {
+        this.message = message;
+        this.onApprove = onApprove;
+        this.onCancel = onCancel;
+        this.showDatePicker = showDatePicker;
     }
 }

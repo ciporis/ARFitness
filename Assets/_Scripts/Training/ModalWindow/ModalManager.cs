@@ -15,6 +15,10 @@ public class ModalManager : MonoBehaviour
     private Queue<ModalRequest> _modalQueue = new Queue<ModalRequest>();
     private bool _isShowingModal = false;
 
+    [Header("Date Selection")]
+    [SerializeField] private GameObject _datePickerPrefab;
+
+    private DateTime _selectedDate = DateTime.Today;
     private void Awake()
     {
         InitializeSingleton();
@@ -35,9 +39,41 @@ public class ModalManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    private void CreateDatePickerModal(ModalRequest request)
+    {
+        var modalGO = Instantiate(_modalPrefab, _modalParent);
+        var modalWindow = modalGO.GetComponent<ModalWindow>();
+
+        if (modalWindow != null)
+        {
+            // Настраиваем окно с выбором даты
+            modalWindow.InitializeWithDatePicker(request, _selectedDate, OnDateSelected);
+        }
+    }
+
+    private void OnDateSelected(DateTime date)
+    {
+        _selectedDate = date;
+    }
 
     #region Public Methods
+    public void ShowModalWithDatePicker(ModalRequest request)
+    {
+        _selectedDate = DateTime.Today;
 
+        if (request.showDatePicker)
+        {
+            CreateDatePickerModal(request);
+        }
+        else
+        {
+            ShowModal(request);
+        }
+    }
+    public DateTime GetSelectedDate()
+    {
+        return _selectedDate;
+    }
     public void ShowModal(ModalRequest request)
     {
         if (_isShowingModal)

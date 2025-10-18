@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
-
+using Data;
 public class PlanningPanel : MonoBehaviour
 {
     [Header("UI References")]
@@ -25,7 +25,7 @@ public class PlanningPanel : MonoBehaviour
 
         // Заполняем dropdown типами активностей
         _activityTypeDropdown.ClearOptions();
-        var activityTypes = Enum.GetNames(typeof(ActivityData.ActivityType));
+        var activityTypes = Enum.GetNames(typeof(ActivityType));
         _activityTypeDropdown.AddOptions(new System.Collections.Generic.List<string>(activityTypes));
 
         _panel.SetActive(false);
@@ -57,7 +57,7 @@ public class PlanningPanel : MonoBehaviour
             id = Guid.NewGuid().ToString(),
             name = _nameInput.text,
             date = _selectedDate,
-            type = (ActivityData.ActivityType)_activityTypeDropdown.value,
+            type = (ActivityType)_activityTypeDropdown.value,
             distance = float.TryParse(_distanceInput.text, out float dist) ? dist : 0,
             duration = TimeSpan.TryParse(_durationInput.text, out TimeSpan dur) ? dur : TimeSpan.Zero,
             isCompleted = false

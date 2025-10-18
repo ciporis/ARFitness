@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Data;
 
 public class CalendarManager : MonoBehaviour
 {
@@ -9,7 +10,12 @@ public class CalendarManager : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private ActivityFilter _currentFilter = ActivityFilter.All;
-
+    public enum ActivityFilter
+    {
+        All,
+        MyTrainings,
+        Competitions
+    }
     private List<ActivityData> _allActivities = new List<ActivityData>();
     private List<ChallengeData> _allChallenges = new List<ChallengeData>();
     private DateTime _currentMonth;
@@ -19,13 +25,6 @@ public class CalendarManager : MonoBehaviour
     public static event Action<DateTime> OnDateSelected;
     public static event Action<ActivityFilter> OnFilterChanged;
     public static event Action<List<ActivityData>> OnActivitiesUpdated;
-
-    public enum ActivityFilter  
-    {
-        All,
-        MyTrainings,
-        Competitions
-    }
 
     private void Awake()
     {
@@ -85,7 +84,7 @@ public class CalendarManager : MonoBehaviour
         if (challenge != null)
         {
             challenge.isRegistered = true;
-            ScheduleNotification(challenge);
+            Debug.Log($"Зарегистрировались на челлендж: {challenge.name}");
         }
     }
 
@@ -100,7 +99,8 @@ public class CalendarManager : MonoBehaviour
                 name = $"Повтор: {originalActivity.name}",
                 date = DateTime.Today,
                 type = originalActivity.type,
-                routeId = originalActivity.routeId,
+                distance = originalActivity.distance,
+                duration = originalActivity.duration,
                 isCompleted = false
             };
 
@@ -108,7 +108,9 @@ public class CalendarManager : MonoBehaviour
 
             ModalManager.Instance.ShowConfirmModal(
                 "Тренировка запланирована на сегодня! Хотите установить напоминание?",
-                onConfirm: () => ScheduleActivityReminder(newActivity)
+                onConfirm: () => Debug.Log("Напоминание установлено"),
+                confirmText: "Да",
+                cancelText: "Нет"
             );
         }
     }
@@ -133,9 +135,9 @@ public class CalendarManager : MonoBehaviour
         switch (_currentFilter)
         {
             case ActivityFilter.MyTrainings:
-                return _allActivities.FindAll(a => a.challenge == null);
+                return _allActivities.FindAll(a => string.IsNullOrEmpty(a.challengeId));
             case ActivityFilter.Competitions:
-                return _allActivities.FindAll(a => a.challenge != null);
+                return _allActivities.FindAll(a => !string.IsNullOrEmpty(a.challengeId));
             default:
                 return _allActivities;
         }
@@ -172,18 +174,62 @@ public class CalendarManager : MonoBehaviour
         OnActivitiesUpdated?.Invoke(GetFilteredActivities());
     }
 
-    private void ScheduleNotification(ChallengeData challenge)
-    {
-        Debug.Log($"Уведомление запланировано для челленджа: {challenge.name}");
+    #endregion
 
-#if UNITY_ANDROID || UNITY_IOS
-        // ScheduleLocalNotification(challenge);
-#endif
+    #region Test Data Methods
+
+    [ContextMenu("Add Test Activities")]
+    public void AddTestActivities()
+    {
+        _allActivities.AddRange(new List<ActivityData>
+        {
+            new ActivityData
+            {
+                id = "test_1",
+                name = "Утренняя пробежка",
+                date = DateTime.Today.AddDays(-1),
+                type = ActivityType.Running,
+                distance = 5.2f,
+                duration = TimeSpan.FromMinutes(28),
+                isCompleted = true
+            },
+            new ActivityData
+            {
+                id = "test_2",
+                name = "Соревнование по бегу",
+                date = DateTime.Today,
+                type = ActivityType.Running,
+                distance = 10.0f,
+                duration = TimeSpan.FromMinutes(55),
+                isCompleted = true,
+                challengeId = "challenge_1"
+            }
+        });
+
+        _allChallenges.AddRange(new List<ChallengeData>
+        {
+            new ChallengeData
+            {
+                id = "challenge_1",
+                name = "Осенний марафон",
+                description = "Пробеги 50км за неделю",
+                startDate = DateTime.Today.AddDays(-7),
+                endDate = DateTime.Today.AddDays(7),
+                isRegistered = false
+            }
+        });
+
+        UpdateCalendarDisplay();
+        Debug.Log("Test data added!");
     }
 
-    private void ScheduleActivityReminder(ActivityData activity)
+    [ContextMenu("Clear All Data")]
+    public void ClearAllData()
     {
-        Debug.Log($"Напоминание установлено для: {activity.name}");
+        _allActivities.Clear();
+        _allChallenges.Clear();
+        UpdateCalendarDisplay();
+        Debug.Log("All data cleared!");
     }
 
     #endregion

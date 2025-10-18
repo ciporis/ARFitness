@@ -1,14 +1,17 @@
-using TMPro;
-using Unity.VisualScripting;
+Ôªøusing TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
+using Data;
 
 public class CardActivity : MonoBehaviour, IDataCard<ActivityData>
 {
     private ActivityData _activityData;
+    private ChallengeData _challengeData;
     [SerializeField] private TMP_Text _name;
     [SerializeField] private TMP_Text _description;
-    [SerializeField] private TMP_Text _date;
+    [SerializeField] private TMP_Text _distance;
+    [SerializeField] private TMP_Text _duration;
     [SerializeField] private TMP_Text _type;
     [SerializeField] private Button _actionButton;
 
@@ -20,58 +23,175 @@ public class CardActivity : MonoBehaviour, IDataCard<ActivityData>
     public void Initialize(ActivityData activityData)
     {
         _activityData = activityData;
+
+        if (!string.IsNullOrEmpty(activityData.challengeId))
+        {
+            _challengeData = ActivityDataManager.Instance.GetChallengeById(activityData.challengeId);
+        }
+
         SetData();
     }
 
     public void SetData()
     {
-        if (_activityData == null)
-        {
-            Debug.LogError("Activity data is null");
-            return;
-        }
+        if (_activityData == null) return;
+
         _name.text = _activityData.name;
         _description.text = _activityData.description;
-        _date.text = _activityData.date.ToString();
-        _type.text = _activityData.type.ToString();
+        _distance.text = $"{_activityData.distance:F1} –∫–º";
+        _duration.text = _activityData.duration.ToString(@"hh\:mm");
+        _type.text = GetActivityTypeText(_activityData.type);
+
+        UpdateActionButton();
+    }
+
+    private void UpdateActionButton()
+    {
+        var buttonText = _actionButton.GetComponentInChildren<TMP_Text>();
+        if (buttonText != null)
+        {
+            buttonText.text = IsChallenge() ? "–£—á–∞—Å—Ç–≤–æ–≤–∞—Ç—å" : "–ó–∞–ø–∏—Å–∞—Ç—å—Å—è";
+        }
     }
 
     private void OnActionButtonClick()
     {
-        var request = new ModalRequest(
-            $"¬˚ ıÓÚËÚÂ Á‡Â„ËÒÚËÓ‚‡Ú¸Òˇ Ì‡ ‡ÍÚË‚ÌÓÒÚ¸ \"{_activityData.name}\"?",
-            onApprove: OnRegistrationApproved,
-            onCancel: OnRegistrationCancelled
-        )
+        if (IsChallenge())
         {
-            approveText = "«‡Â„ËÒÚËÓ‚‡Ú¸Òˇ",
-            cancelText = "ŒÚÏÂÌ‡"
+            RegisterForChallenge();
+        }
+        else
+        {
+            RegisterForRegularActivity();
+        }
+    }
+
+    private bool IsChallenge()
+    {
+        return _challengeData != null || !string.IsNullOrEmpty(_activityData.challengeId);
+    }
+
+    private void RegisterForChallenge()
+    {
+        var request = new ModalRequest
+        {
+            title = "–£—á–∞—Å—Ç–∏–µ –≤ —á–µ–ª–ª–µ–Ω–¥–∂–µ",
+            message = $"–•–æ—Ç–∏—Ç–µ —É—á–∞—Å—Ç–≤–æ–≤–∞—Ç—å –≤ —á–µ–ª–ª–µ–Ω–¥–∂–µ \"{_activityData.name}\"?",
+            approveText = "–£—á–∞—Å—Ç–≤–æ–≤–∞—Ç—å",
+            cancelText = "–û—Ç–º–µ–Ω–∞",
+            onApprove = CompleteChallengeRegistration,
+            onCancel = OnRegistrationCancelled
         };
 
         ModalManager.Instance.ShowModal(request);
     }
 
-    private void OnRegistrationApproved()
+    private void RegisterForRegularActivity()
     {
-        Debug.Log($"–Â„ËÒÚ‡ˆËˇ Ì‡ {_activityData.name} ÔÓ‰Ú‚ÂÊ‰ÂÌ‡!");
+        var request = new ModalRequest
+        {
+            title = "–ó–∞–ø–∏—Å—å –Ω–∞ —Ç—Ä–µ–Ω–∏—Ä–æ–≤–∫—É",
+            message = $"–í—ã–±–µ—Ä–∏—Ç–µ –¥–∞—Ç—É –¥–ª—è \"{_activityData.name}\":",
+            approveText = "–ó–∞–ø–∏—Å–∞—Ç—å—Å—è",
+            cancelText = "–û—Ç–º–µ–Ω–∞",
+            showDatePicker = true,
+            initialDate = DateTime.Today,
+            onApprove = () => OnRegularActivityApproved(ModalManager.Instance.GetSelectedDate()),
+            onCancel = OnRegistrationCancelled
+        };
 
-        ModalManager.Instance.ShowAlertModal(
-            "–Â„ËÒÚ‡ˆËˇ ÔÓ¯Î‡ ÛÒÔÂ¯ÌÓ!",
-            onClose: () => Debug.Log("Alert closed"),
-            closeText: "ŒÚÎË˜ÌÓ!"
-        );
+        ModalManager.Instance.ShowModalWithDatePicker(request);
+    }
 
-        RegisterForActivity();
+    private void OnRegularActivityApproved(DateTime selectedDate)
+    {
+        if (selectedDate < DateTime.Today)
+        {
+            ModalManager.Instance.ShowAlertModal("–ù–µ–ª—å–∑—è –∑–∞–ø–∏—Å–∞—Ç—å—Å—è –Ω–∞ –ø—Ä–æ—à–µ–¥—à—É—é –¥–∞—Ç—É!");
+            return;
+        }
+
+        CompleteRegularRegistration(selectedDate);
+    }
+
+    private void CompleteChallengeRegistration()
+    {
+        try
+        {
+            if (_challengeData != null)
+            {
+                ActivityDataManager.Instance.JoinChallenge(_challengeData.id);
+            }
+
+            var challengeActivity = new ActivityData
+            {
+                id = Guid.NewGuid().ToString(),
+                name = _activityData.name,
+                description = _activityData.description,
+                date = DateTime.Today,
+                type = _activityData.type,
+                challengeId = _activityData.challengeId,
+                distance = _activityData.distance,
+                duration = _activityData.duration,
+                isCompleted = false
+            };
+
+            CalendarManager.Instance.AddActivity(challengeActivity);
+
+            ModalManager.Instance.ShowAlertModal(
+                $"üéâ –í—ã —É—á–∞—Å—Ç–≤—É–µ—Ç–µ –≤ —á–µ–ª–ª–µ–Ω–¥–∂–µ!\n\"{_activityData.name}\"",
+                closeText: "–û—Ç–ª–∏—á–Ω–æ!"
+            );
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"–û—à–∏–±–∫–∞: {e.Message}");
+            ModalManager.Instance.ShowAlertModal("–û—à–∏–±–∫–∞ –ø—Ä–∏ –∑–∞–ø–∏—Å–∏ –Ω–∞ —á–µ–ª–ª–µ–Ω–¥–∂");
+        }
+    }
+
+    private void CompleteRegularRegistration(DateTime selectedDate)
+    {
+        try
+        {
+            var newActivity = new ActivityData
+            {
+                id = Guid.NewGuid().ToString(),
+                name = _activityData.name,
+                description = _activityData.description,
+                date = selectedDate,
+                type = _activityData.type,
+                distance = _activityData.distance,
+                duration = _activityData.duration,
+                isCompleted = false
+            };
+
+            CalendarManager.Instance.AddActivity(newActivity);
+
+            ModalManager.Instance.ShowAlertModal(
+                $"‚úÖ \"{_activityData.name}\" –∑–∞–ø–∏—Å–∞–Ω–∞ –Ω–∞ {selectedDate:dd.MM.yyyy}",
+                closeText: "–û—Ç–ª–∏—á–Ω–æ!"
+            );
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"–û—à–∏–±–∫–∞: {e.Message}");
+            ModalManager.Instance.ShowAlertModal("–û—à–∏–±–∫–∞ –ø—Ä–∏ –∑–∞–ø–∏—Å–∏");
+        }
     }
 
     private void OnRegistrationCancelled()
     {
-        Debug.Log("–Â„ËÒÚ‡ˆËˇ ÓÚÏÂÌÂÌ‡ ÔÓÎ¸ÁÓ‚‡ÚÂÎÂÏ");
+        Debug.Log("–†–µ–≥–∏—Å—Ç—Ä–∞—Ü–∏—è –æ—Ç–º–µ–Ω–µ–Ω–∞");
     }
 
-    private void RegisterForActivity()
+    private string GetActivityTypeText(ActivityType type)
     {
-        // –Â‡Î¸Ì‡ˇ ÎÓ„ËÍ‡ Â„ËÒÚ‡ˆËË
-        // ActivityManager.Instance.Register(_activityData.Id);
+        return type switch
+        {
+            ActivityType.Running => "üèÉ –ë–µ–≥",
+            ActivityType.Walking => "üö∂ –•–æ–¥—å–±–∞",
+            _ => "üéØ –ê–∫—Ç–∏–≤–Ω–æ—Å—Ç—å"
+        };
     }
 }

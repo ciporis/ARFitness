@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Data;
 
 public class ActivityListItem : MonoBehaviour, IInitializable<ActivityData>
 {
@@ -18,7 +19,6 @@ public class ActivityListItem : MonoBehaviour, IInitializable<ActivityData>
 
         _nameText.text = data.name;
         _detailsText.text = $"{data.type} Х {data.duration:hh\\:mm} Х {data.distance:F1} км";
-        _metricsText.text = $"{data.calories} ккал Х {data.points} баллов";
 
         // Ќастройка иконки типа активности
         _typeIcon.color = GetActivityColor(data.type);
@@ -48,16 +48,12 @@ public class ActivityListItem : MonoBehaviour, IInitializable<ActivityData>
         Debug.Log($"Ќачинаем тренировку: {_activityData.name}");
     }
 
-    private Color GetActivityColor(ActivityData.ActivityType type)
+    private Color GetActivityColor(ActivityType type)
     {
         return type switch
         {
-            ActivityData.ActivityType.Running => Color.red,
-            ActivityData.ActivityType.Cycling => Color.blue,
-            ActivityData.ActivityType.Swimming => Color.cyan,
-            ActivityData.ActivityType.Gym => Color.magenta,
-            ActivityData.ActivityType.Yoga => Color.green,
-            ActivityData.ActivityType.Walking => Color.gray,
+            ActivityType.Running => Color.red,
+            ActivityType.Walking => Color.gray,
             _ => Color.white
         };
     }

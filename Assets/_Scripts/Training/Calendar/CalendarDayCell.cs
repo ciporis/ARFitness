@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
+using Data;
 
 public class CalendarDayCell : MonoBehaviour
 {
@@ -95,12 +96,8 @@ public class CalendarDayCell : MonoBehaviour
         var mainActivity = activities[0];
         return mainActivity.type switch
         {
-            ActivityData.ActivityType.Running => new Color(1f, 0.2f, 0.2f),
-            ActivityData.ActivityType.Cycling => new Color(0.2f, 0.6f, 1f),
-            ActivityData.ActivityType.Swimming => new Color(0.2f, 0.8f, 1f),
-            ActivityData.ActivityType.Gym => new Color(0.8f, 0.2f, 0.8f),
-            ActivityData.ActivityType.Yoga => new Color(0.6f, 0.2f, 1f),
-            ActivityData.ActivityType.Walking => new Color(0.3f, 0.8f, 0.3f),
+            ActivityType.Running => new Color(1f, 0.2f, 0.2f),
+            ActivityType.Walking => new Color(0.3f, 0.8f, 0.3f),
             _ => _activityColor
         };
     }

@@ -1,3 +1,4 @@
+п»їusing Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +19,7 @@ public class ChallengeListItem : MonoBehaviour, IInitializable<ChallengeData>
 
         _nameText.text = data.name;
         _dateText.text = $"{data.startDate:dd.MM} - {data.endDate:dd.MM}";
-        _typeText.text = GetChallengeTypeText(data.type);
+        _typeText.text = "Р§РµР»Р»РµРЅРґР¶";
 
         SetupRegistrationButton();
     }
@@ -30,27 +31,23 @@ public class ChallengeListItem : MonoBehaviour, IInitializable<ChallengeData>
             _registerButton.gameObject.SetActive(false);
             _registeredBadge.SetActive(true);
         }
-        else if (_challengeData.isInvited)
-        {
-            _registerButton.gameObject.SetActive(true);
-            _registerButton.GetComponentInChildren<TMP_Text>().text = "Записаться";
-            _registerButton.onClick.RemoveAllListeners();
-            _registerButton.onClick.AddListener(OnRegisterClicked);
-        }
         else
         {
-            _registerButton.gameObject.SetActive(false);
+            _registerButton.gameObject.SetActive(true);
+            _registerButton.GetComponentInChildren<TMP_Text>().text = "РЈС‡Р°СЃС‚РІРѕРІР°С‚СЊ";
+            _registerButton.onClick.RemoveAllListeners();
+            _registerButton.onClick.AddListener(OnRegisterClicked);
         }
     }
 
     private void OnRegisterClicked()
     {
         ModalManager.Instance.ShowChoiceModal(
-            $"Записаться на челлендж \"{_challengeData.name}\"?",
+            $"РЈС‡Р°СЃС‚РІРѕРІР°С‚СЊ РІ С‡РµР»Р»РµРЅРґР¶Рµ \"{_challengeData.name}\"?",
             onApprove: () => RegisterForChallenge(),
             onCancel: null,
-            approveText: "Записаться",
-            cancelText: "Отмена"
+            approveText: "РЈС‡Р°СЃС‚РІРѕРІР°С‚СЊ",
+            cancelText: "РћС‚РјРµРЅР°"
         );
     }
 
@@ -59,16 +56,10 @@ public class ChallengeListItem : MonoBehaviour, IInitializable<ChallengeData>
         CalendarManager.Instance.RegisterForChallenge(_challengeData.id);
         _registeredBadge.SetActive(true);
         _registerButton.gameObject.SetActive(false);
-    }
 
-    private string GetChallengeTypeText(ChallengeData.ChallengeType type)
-    {
-        return type switch
-        {
-            ChallengeData.ChallengeType.Personal => "Личный",
-            ChallengeData.ChallengeType.Competition => "Соревнование",
-            ChallengeData.ChallengeType.Team => "Командный",
-            _ => "Челлендж"
-        };
+        ModalManager.Instance.ShowAlertModal(
+            $"рџЋ‰ Р’С‹ СѓС‡Р°СЃС‚РІСѓРµС‚Рµ РІ С‡РµР»Р»РµРЅРґР¶Рµ!\n\"{_challengeData.name}\"",
+            closeText: "РћС‚Р»РёС‡РЅРѕ!"
+        );
     }
 }

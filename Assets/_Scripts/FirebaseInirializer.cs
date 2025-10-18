@@ -1,4 +1,4 @@
-using Firebase;
+/*using Firebase;
 using Firebase.Extensions;
 using System;
 using System.Threading.Tasks;
@@ -6,12 +6,12 @@ using UnityEngine;
 
 public class FirebaseInirializer : MonoBehaviour
 {
-    private void Start()
+    private void Awake()
     {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(OnDependencyStatusReceived);
     }
 
-    private void OnDependencyStatusReceived(Task <DependencyStatus> task)
+    private void OnDependencyStatusReceived(Task<DependencyStatus> task)
     {
         try
         {
@@ -31,3 +31,4 @@ public class FirebaseInirializer : MonoBehaviour
         }
     }
 }
+*/
